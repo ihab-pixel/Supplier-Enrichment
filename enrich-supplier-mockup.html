@@ -416,6 +416,17 @@
     object-fit: cover;
     display: block;
   }
+  .photo-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 22px 8px 7px;
+    background: linear-gradient(transparent, rgba(0,0,0,.45));
+    color: rgba(255,255,255,.92);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: .02em;
+  }
   .photo-card:hover { transform: scale(1.02); }
   .photo-card.selected { border-color: #059669; }
 
@@ -465,12 +476,20 @@
     justify-content: center;
   }
   .lightbox.open { display: flex; }
-  .lightbox-img {
-    max-width: 88vw;
-    max-height: 84vh;
+  .lightbox-photo {
+    width: min(680px, 88vw);
+    height: min(480px, 82vh);
     border-radius: 10px;
     box-shadow: 0 12px 60px rgba(0,0,0,.5);
-    object-fit: contain;
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+  }
+  .lightbox-photo-label {
+    color: rgba(255,255,255,.9);
+    font-size: 15px;
+    font-weight: 600;
+    text-shadow: 0 2px 6px rgba(0,0,0,.6);
   }
   .lightbox-close {
     position: fixed;
@@ -659,19 +678,31 @@
       <div class="photo-area-title">Current library · 3 photos</div>
       <div class="photo-grid">
 
-        <div class="photo-card" data-src="https://picsum.photos/seed/meurice-room/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-room/400/300" alt="Hotel room">
+        <div class="photo-card"
+             style="background: linear-gradient(135deg,#c4a35a 0%,#8b5a2b 50%,#3d2010 100%)"
+             data-gradient="linear-gradient(135deg,#c4a35a 0%,#8b5a2b 50%,#3d2010 100%)"
+             data-label="Deluxe Room"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Deluxe Room</div>
         </div>
 
-        <div class="photo-card" data-src="https://picsum.photos/seed/meurice-lobby/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-lobby/400/300" alt="Lobby">
+        <div class="photo-card"
+             style="background: linear-gradient(135deg,#1c3f6e 0%,#2e6da4 50%,#c8a96e 100%)"
+             data-gradient="linear-gradient(135deg,#1c3f6e 0%,#2e6da4 50%,#c8a96e 100%)"
+             data-label="Lobby"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Lobby</div>
         </div>
 
-        <div class="photo-card" data-src="https://picsum.photos/seed/meurice-view/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-view/400/300" alt="View">
+        <div class="photo-card"
+             style="background: linear-gradient(135deg,#87ceeb 0%,#4682b4 40%,#228b22 100%)"
+             data-gradient="linear-gradient(135deg,#87ceeb 0%,#4682b4 40%,#228b22 100%)"
+             data-label="Garden View"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Garden View</div>
         </div>
 
       </div>
@@ -682,33 +713,53 @@
       <div class="photo-area-title">Suggested photos to add · <strong id="photo-count">5</strong> selected</div>
       <div class="photo-grid">
 
-        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-restaurant/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-restaurant/400/300" alt="Restaurant">
+        <div class="photo-card selectable selected"
+             style="background: linear-gradient(135deg,#7b1a1a 0%,#c0392b 45%,#e8a87c 100%)"
+             data-gradient="linear-gradient(135deg,#7b1a1a 0%,#c0392b 45%,#e8a87c 100%)"
+             data-label="Restaurant Le Meurice"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Restaurant Le Meurice</div>
           <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
         </div>
 
-        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-spa/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-spa/400/300" alt="Spa">
+        <div class="photo-card selectable selected"
+             style="background: linear-gradient(135deg,#2c1654 0%,#7b2d8b 55%,#ddb6f0 100%)"
+             data-gradient="linear-gradient(135deg,#2c1654 0%,#7b2d8b 55%,#ddb6f0 100%)"
+             data-label="Spa & Wellness"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Spa &amp; Wellness</div>
           <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
         </div>
 
-        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-bar/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-bar/400/300" alt="Bar">
+        <div class="photo-card selectable selected"
+             style="background: linear-gradient(135deg,#1a1a2e 0%,#16213e 45%,#c4a35a 100%)"
+             data-gradient="linear-gradient(135deg,#1a1a2e 0%,#16213e 45%,#c4a35a 100%)"
+             data-label="Le Bar Fontainebleau"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Le Bar Fontainebleau</div>
           <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
         </div>
 
-        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-garden/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-garden/400/300" alt="Garden">
+        <div class="photo-card selectable selected"
+             style="background: linear-gradient(135deg,#1a4c1a 0%,#2d8a2d 45%,#90ee90 100%)"
+             data-gradient="linear-gradient(135deg,#1a4c1a 0%,#2d8a2d 45%,#90ee90 100%)"
+             data-label="Tuileries Garden Terrace"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Tuileries Garden Terrace</div>
           <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
         </div>
 
-        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-suite/900/650" onclick="openLightbox(this.dataset.src)">
-          <img src="https://picsum.photos/seed/meurice-suite/400/300" alt="Suite">
+        <div class="photo-card selectable selected"
+             style="background: linear-gradient(135deg,#5c3a1a 0%,#a07040 50%,#f0d090 100%)"
+             data-gradient="linear-gradient(135deg,#5c3a1a 0%,#a07040 50%,#f0d090 100%)"
+             data-label="Belle Étoile Suite"
+             onclick="openLightbox(this.dataset.gradient, this.dataset.label)">
           <div class="zoom-hint">⤢</div>
+          <div class="photo-label">Belle Étoile Suite</div>
           <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
         </div>
 
@@ -734,7 +785,9 @@
 
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  <div class="lightbox-photo" id="lightbox-photo">
+    <span class="lightbox-photo-label" id="lightbox-label"></span>
+  </div>
 </div>
 
 <script>
@@ -755,8 +808,9 @@
     });
   }
 
-  function openLightbox(src) {
-    document.getElementById('lightbox-img').src = src;
+  function openLightbox(gradient, label) {
+    document.getElementById('lightbox-photo').style.background = gradient;
+    document.getElementById('lightbox-label').textContent = label;
     document.getElementById('lightbox').classList.add('open');
   }
 
