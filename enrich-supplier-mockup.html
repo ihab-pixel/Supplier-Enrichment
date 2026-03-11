@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Enrich Supplier Data — Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  .modal {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.14);
+    width: 100%;
+    max-width: 860px;
+    overflow: hidden;
+  }
+
+  /* ── Header ── */
+  .modal-header {
+    padding: 20px 28px 18px;
+    border-bottom: 1px solid #e8eaed;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .header-left h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+    margin-bottom: 2px;
+  }
+  .header-left p {
+    font-size: 13px;
+    color: #6b7280;
+  }
+  .supplier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    background: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px 10px;
+    margin-top: 6px;
+  }
+  .supplier-badge .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    font-size: 20px;
+    line-height: 1;
+    padding: 2px;
+    border-radius: 4px;
+    transition: color .15s;
+  }
+  .close-btn:hover { color: #374151; }
+
+  /* ── Column headers ── */
+  .col-headers {
+    display: grid;
+    grid-template-columns: 200px 1fr 44px 1fr;
+    gap: 0;
+    padding: 10px 28px;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e8eaed;
+  }
+  .col-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: #9ca3af;
+  }
+  .col-label.center { text-align: center; }
+  .col-label.current { color: #6b7280; }
+  .col-label.enriched {
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .col-label.enriched::before {
+    content: "✦";
+    font-size: 9px;
+  }
+
+  /* ── Select-all bar ── */
+  .select-all-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 28px;
+    background: #eff6ff;
+    border-bottom: 1px solid #dbeafe;
+  }
+  .select-all-bar span {
+    font-size: 12px;
+    color: #3b82f6;
+  }
+  .btn-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: #2563eb;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: background .15s;
+  }
+  .btn-text:hover { background: #dbeafe; }
+
+  /* ── Rows ── */
+  .rows { padding: 8px 0; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 200px 1fr 44px 1fr;
+    align-items: center;
+    gap: 0;
+    padding: 0 28px;
+    min-height: 54px;
+    transition: background .12s;
+  }
+  .row:hover { background: #fafafa; }
+  .row + .row { border-top: 1px solid #f3f4f6; }
+
+  .field-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #374151;
+    padding-right: 16px;
+  }
+  .field-name .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #9061f9;
+    background: #f5f3ff;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .cell {
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color .15s, background .15s;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .cell.empty-val {
+    color: #c0c0c0;
+    font-style: italic;
+  }
+
+  .cell.current-cell { background: #f9fafb; }
+  .cell.enriched-cell { background: #eff6ff; }
+
+  .cell.selected-current {
+    border-color: #374151;
+    background: #f3f4f6;
+  }
+  .cell.selected-enriched {
+    border-color: #2563eb;
+    background: #dbeafe;
+  }
+
+  .cell.selected-current::after,
+  .cell.selected-enriched::after {
+    content: "✓";
+    position: absolute;
+    right: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .cell.selected-current::after { color: #374151; }
+  .cell.selected-enriched::after { color: #2563eb; }
+
+  .cell.new-value { background: #ecfdf5; }
+  .cell.new-value.selected-enriched {
+    border-color: #059669;
+    background: #d1fae5;
+  }
+  .cell.new-value.selected-enriched::after { color: #059669; }
+
+  .badge-new {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    background: #059669;
+    border-radius: 4px;
+    padding: 1px 5px;
+    margin-left: 6px;
+    vertical-align: middle;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+
+  /* arrow in middle */
+  .arrow-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #d1d5db;
+    font-size: 16px;
+    user-select: none;
+  }
+
+  /* ── Section divider ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 28px;
+    background: #f8f9fb;
+    border-top: 1px solid #e8eaed;
+    border-bottom: 1px solid #e8eaed;
+  }
+  .section-divider span {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: #9061f9;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #e5d5ff;
+  }
+
+  /* ── Footer ── */
+  .modal-footer {
+    padding: 16px 28px;
+    border-top: 1px solid #e8eaed;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #f8f9fb;
+  }
+  .footer-hint {
+    font-size: 12px;
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer-hint strong { color: #6b7280; }
+  .footer-actions { display: flex; gap: 8px; }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 7px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background .15s, box-shadow .15s;
+  }
+  .btn-secondary {
+    background: #fff;
+    border: 1px solid #d1d5db;
+    color: #374151;
+  }
+  .btn-secondary:hover { background: #f3f4f6; }
+  .btn-primary {
+    background: #2563eb;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #1d4ed8; box-shadow: 0 2px 8px rgba(37,99,235,.3); }
+
+  /* ── Tooltip ── */
+  .tooltip-wrap { position: relative; display: inline-flex; }
+  .tooltip-wrap .tip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .tooltip-wrap:hover .tip { display: block; }
+
+  .accessibility-icon {
+    font-size: 16px;
+    margin-right: 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="modal">
+
+  <!-- Header -->
+  <div class="modal-header">
+    <div class="header-left">
+      <h2>Review Enriched Data</h2>
+      <p>Choose which value to keep for each field. Your current data is never overwritten without confirmation.</p>
+      <div class="supplier-badge">
+        <span class="dot"></span>
+        Hôtel Le Meurice — Paris
+      </div>
+    </div>
+    <button class="close-btn" title="Close">✕</button>
+  </div>
+
+  <!-- Column headers -->
+  <div class="col-headers">
+    <div class="col-label">Field</div>
+    <div class="col-label current">Current value</div>
+    <div></div>
+    <div class="col-label enriched">Enriched value</div>
+  </div>
+
+  <!-- Select-all bar -->
+  <div class="select-all-bar">
+    <span>Quick select:</span>
+    <button class="btn-text" onclick="selectAll('current')">Keep all current</button>
+    <span style="color:#cbd5e1">|</span>
+    <button class="btn-text" onclick="selectAll('enriched')">Use all enriched</button>
+    <span style="color:#cbd5e1">|</span>
+    <button class="btn-text" onclick="selectAllNew()">Use all new only</button>
+  </div>
+
+  <!-- Rows -->
+  <div class="rows" id="rows">
+
+    <!-- Location -->
+    <div class="row">
+      <div class="field-name">Location</div>
+      <div class="cell current-cell" data-field="location" data-side="current" onclick="pick(this)">
+        Paris — France
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell" data-field="location" data-side="enriched" onclick="pick(this)">
+        Paris — France
+      </div>
+    </div>
+
+    <!-- Address -->
+    <div class="row">
+      <div class="field-name">Address</div>
+      <div class="cell current-cell empty-val" data-field="address" data-side="current" onclick="pick(this)">
+        No value
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell new-value" data-field="address" data-side="enriched" onclick="pick(this)">
+        228 Rue de Rivoli, 75001 Paris <span class="badge-new">New</span>
+      </div>
+    </div>
+
+    <!-- Accessibility -->
+    <div class="row">
+      <div class="field-name">Accessibility</div>
+      <div class="cell current-cell empty-val" data-field="accessibility" data-side="current" onclick="pick(this)">
+        No value
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell new-value" data-field="accessibility" data-side="enriched" onclick="pick(this)">
+        <span class="accessibility-icon">♿</span> Wheelchair accessible entrance, adapted rooms available <span class="badge-new">New</span>
+      </div>
+    </div>
+
+    <!-- Phone -->
+    <div class="row">
+      <div class="field-name">Phone</div>
+      <div class="cell current-cell" data-field="phone" data-side="current" onclick="pick(this)">
+        +33 1 44 58 10 10
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell" data-field="phone" data-side="enriched" onclick="pick(this)">
+        +33 1 44 58 10 10
+      </div>
+    </div>
+
+    <!-- Weekdays Closed -->
+    <div class="row">
+      <div class="field-name">Weekdays Closed</div>
+      <div class="cell current-cell empty-val" data-field="weekdays" data-side="current" onclick="pick(this)">
+        No value
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell new-value" data-field="weekdays" data-side="enriched" onclick="pick(this)">
+        Open 7 days — no closures <span class="badge-new">New</span>
+      </div>
+    </div>
+
+    <!-- Website -->
+    <div class="row">
+      <div class="field-name">Website</div>
+      <div class="cell current-cell" data-field="website" data-side="current" onclick="pick(this)">
+        dorchestercollection.com/le-meurice
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell" data-field="website" data-side="enriched" onclick="pick(this)">
+        dorchestercollection.com/en/paris/le-meurice
+      </div>
+    </div>
+
+    <!-- Direct Reservation Link -->
+    <div class="row">
+      <div class="field-name">Reservation Link</div>
+      <div class="cell current-cell empty-val" data-field="reservation" data-side="current" onclick="pick(this)">
+        No value
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell new-value" data-field="reservation" data-side="enriched" onclick="pick(this)">
+        book.dorchestercollection.com/?hotel=LEMEURICE <span class="badge-new">New</span>
+      </div>
+    </div>
+
+    <!-- Section: Hotel-specific -->
+    <div class="section-divider">
+      <span>Hotel fields</span>
+    </div>
+
+    <!-- Hotel Category -->
+    <div class="row">
+      <div class="field-name">Hotel Category <span class="tag">Hotel</span></div>
+      <div class="cell current-cell" data-field="category" data-side="current" onclick="pick(this)">
+        5-Star Palace
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell" data-field="category" data-side="enriched" onclick="pick(this)">
+        5-Star Luxury Palace
+      </div>
+    </div>
+
+    <!-- Boutique -->
+    <div class="row">
+      <div class="field-name">Boutique <span class="tag">Hotel</span></div>
+      <div class="cell current-cell empty-val" data-field="boutique" data-side="current" onclick="pick(this)">
+        No value
+      </div>
+      <div class="arrow-col">›</div>
+      <div class="cell enriched-cell new-value" data-field="boutique" data-side="enriched" onclick="pick(this)">
+        No — large-scale luxury property <span class="badge-new">New</span>
+      </div>
+    </div>
+
+  </div><!-- /rows -->
+
+  <!-- Footer -->
+  <div class="modal-footer">
+    <div class="footer-hint">
+      <strong id="selected-count">0</strong>&nbsp;of 9 fields selected
+      &nbsp;·&nbsp; Click a value to select it
+    </div>
+    <div class="footer-actions">
+      <button class="btn btn-secondary">Cancel</button>
+      <button class="btn btn-primary" id="apply-btn" disabled onclick="alert('Changes applied!')">
+        Apply selected changes
+      </button>
+    </div>
+  </div>
+
+</div><!-- /modal -->
+
+<script>
+  // Track selections per field
+  const selections = {};
+
+  function pick(cell) {
+    const field = cell.dataset.field;
+    const side  = cell.dataset.side;
+    const row   = cell.closest('.row');
+    const cells = row.querySelectorAll('.cell');
+
+    cells.forEach(c => {
+      c.classList.remove('selected-current', 'selected-enriched');
+    });
+
+    if (side === 'current') {
+      cell.classList.add('selected-current');
+    } else {
+      cell.classList.add('selected-enriched');
+    }
+
+    selections[field] = side;
+    updateCount();
+  }
+
+  function selectAll(side) {
+    document.querySelectorAll('.row').forEach(row => {
+      const target = row.querySelector(`[data-side="${side}"]`);
+      if (target) pick(target);
+    });
+  }
+
+  function selectAllNew() {
+    document.querySelectorAll('.cell.new-value').forEach(cell => pick(cell));
+  }
+
+  function updateCount() {
+    const count = Object.keys(selections).length;
+    document.getElementById('selected-count').textContent = count;
+    document.getElementById('apply-btn').disabled = count === 0;
+  }
+
+  // Pre-select a few to show the pattern
+  window.addEventListener('DOMContentLoaded', () => {
+    // auto-select enriched for fields that have "New" badge
+    document.querySelectorAll('.cell.new-value').forEach(c => pick(c));
+    // keep current for location and phone (same)
+    const locCurrent = document.querySelector('[data-field="location"][data-side="current"]');
+    if (locCurrent) pick(locCurrent);
+    const phoneCurrent = document.querySelector('[data-field="phone"][data-side="current"]');
+    if (phoneCurrent) pick(phoneCurrent);
+  });
+</script>
+</body>
+</html>
