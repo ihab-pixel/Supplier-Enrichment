@@ -132,9 +132,53 @@
   }
   .btn-text:hover { background: #dbeafe; }
 
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #e8eaed;
+    background: #f8f9fb;
+    padding: 0 28px;
+    gap: 0;
+  }
+  .tab-btn {
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: -1px;
+    transition: color .15s, border-color .15s;
+  }
+  .tab-btn:hover { color: #374151; }
+  .tab-btn.active {
+    color: #111;
+    font-weight: 600;
+    border-bottom-color: #2563eb;
+  }
+  .tab-btn .tab-count {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    background: #e5e7eb;
+    color: #4b5563;
+  }
+  .tab-btn.active .tab-count {
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
   /* ── Table section ── */
   .table-section { border-top: 1px solid #e8eaed; }
-  .table-section + .table-section { border-top: 2px solid #e8eaed; }
 
   /* ── Unchanged rows (read-only) ── */
   .unchanged-rows { padding: 6px 0 10px; }
@@ -153,36 +197,6 @@
   .unchanged-val {
     font-size: 13px;
     color: #6b7280;
-  }
-
-  .table-section-label {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 28px 6px;
-    background: #f8f9fb;
-  }
-  .table-section-label .label-text {
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-  }
-  .table-section-label .label-count {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 1px 6px;
-    border-radius: 10px;
-  }
-  .table-section.changed .label-text { color: #b45309; }
-  .table-section.changed .label-count {
-    color: #92400e;
-    background: #fef3c7;
-  }
-  .table-section.unchanged .label-text { color: #6b7280; }
-  .table-section.unchanged .label-count {
-    color: #4b5563;
-    background: #f3f4f6;
   }
 
   /* ── Rows ── */
@@ -344,6 +358,19 @@
     <button class="close-btn" title="Close">✕</button>
   </div>
 
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('changed', this)">
+      Changed fields <span class="tab-count">5</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('unchanged', this)">
+      Unchanged fields <span class="tab-count">2</span>
+    </button>
+  </div>
+
+  <!-- Tab panel: Changed fields -->
+  <div class="tab-panel active" id="tab-changed">
+
   <!-- Select-all bar -->
   <div class="select-all-bar">
     <span>Quick select:</span>
@@ -352,12 +379,8 @@
     <button class="btn-text" onclick="selectAll('enriched')">Use all enriched</button>
   </div>
 
-  <!-- Table 1: Changed fields -->
+  <!-- Changed fields table -->
   <div class="table-section changed">
-    <div class="table-section-label">
-      <span class="label-text">Changed fields</span>
-      <span class="label-count">5</span>
-    </div>
     <div class="col-headers">
       <div class="col-label">Field</div>
       <div class="col-label current">Current value</div>
@@ -427,14 +450,13 @@
       </div>
 
     </div>
-  </div><!-- /changed -->
+  </div><!-- /changed table -->
 
-  <!-- Table 2: Unchanged fields (read-only) -->
+  </div><!-- /tab-changed -->
+
+  <!-- Tab panel: Unchanged fields -->
+  <div class="tab-panel" id="tab-unchanged">
   <div class="table-section unchanged">
-    <div class="table-section-label">
-      <span class="label-text">Unchanged fields</span>
-      <span class="label-count">2</span>
-    </div>
     <div class="unchanged-rows">
 
       <div class="unchanged-row">
@@ -448,7 +470,8 @@
       </div>
 
     </div>
-  </div><!-- /unchanged -->
+  </div><!-- /unchanged table -->
+  </div><!-- /tab-unchanged -->
 
   <!-- Footer -->
   <div class="modal-footer">
@@ -467,6 +490,13 @@
 </div><!-- /modal -->
 
 <script>
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    btn.classList.add('active');
+  }
+
   // Track selections per field
   const selections = {};
 
