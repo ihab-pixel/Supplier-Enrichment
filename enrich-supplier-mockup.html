@@ -339,6 +339,152 @@
     font-size: 16px;
     margin-right: 4px;
   }
+
+  /* ── Step bar ── */
+  .step-bar {
+    display: flex;
+    align-items: center;
+    padding: 10px 28px;
+    background: #fff;
+    border-bottom: 1px solid #e8eaed;
+  }
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .step-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e7eb;
+    color: #9ca3af;
+    flex-shrink: 0;
+  }
+  .step-item.active .step-num { background: #2563eb; color: #fff; }
+  .step-item.done .step-num   { background: #059669; color: #fff; }
+  .step-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #9ca3af;
+  }
+  .step-item.active .step-label { color: #111; font-weight: 600; }
+  .step-item.done  .step-label  { color: #059669; }
+  .step-connector {
+    width: 36px;
+    height: 1px;
+    background: #e5e7eb;
+    margin: 0 10px;
+  }
+
+  /* ── Step panels ── */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  /* ── Photo areas ── */
+  .photo-area { padding: 16px 28px 20px; }
+  .photo-area + .photo-area { border-top: 1px solid #e8eaed; }
+  .photo-area-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: #9ca3af;
+    margin-bottom: 12px;
+  }
+  .photo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+    gap: 10px;
+  }
+  .photo-card {
+    position: relative;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    aspect-ratio: 4 / 3;
+    background: #f3f4f6;
+    transition: border-color .15s, transform .12s;
+    cursor: zoom-in;
+  }
+  .photo-card img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .photo-card:hover { transform: scale(1.02); }
+  .photo-card.selected { border-color: #059669; }
+
+  .zoom-hint {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,.32);
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    pointer-events: none;
+  }
+  .photo-card:hover .zoom-hint { display: flex; }
+
+  .photo-toggle {
+    position: absolute;
+    top: 7px; right: 7px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.8);
+    background: rgba(0,0,0,.25);
+    color: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .photo-card.selected .photo-toggle {
+    background: #059669;
+    border-color: #059669;
+    color: #fff;
+  }
+
+  /* ── Lightbox ── */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.88);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .lightbox.open { display: flex; }
+  .lightbox-img {
+    max-width: 88vw;
+    max-height: 84vh;
+    border-radius: 10px;
+    box-shadow: 0 12px 60px rgba(0,0,0,.5);
+    object-fit: contain;
+  }
+  .lightbox-close {
+    position: fixed;
+    top: 18px; right: 24px;
+    color: #fff;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    background: none;
+    border: none;
+    opacity: .75;
+    transition: opacity .15s;
+  }
+  .lightbox-close:hover { opacity: 1; }
 </style>
 </head>
 <body>
@@ -357,6 +503,22 @@
     </div>
     <button class="close-btn" title="Close">✕</button>
   </div>
+
+  <!-- Step bar -->
+  <div class="step-bar">
+    <div class="step-item active" id="step-ind-1">
+      <span class="step-num">1</span>
+      <span class="step-label">Review Fields</span>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step-item" id="step-ind-2">
+      <span class="step-num">2</span>
+      <span class="step-label">Review Photos</span>
+    </div>
+  </div>
+
+  <!-- Step 1 panel -->
+  <div class="step-panel active" id="step-1">
 
   <!-- Tabs -->
   <div class="tabs">
@@ -473,7 +635,7 @@
   </div><!-- /unchanged table -->
   </div><!-- /tab-unchanged -->
 
-  <!-- Footer -->
+  <!-- Footer (step 1) -->
   <div class="modal-footer">
     <div class="footer-hint">
       <strong id="selected-count">0</strong>&nbsp;of 5 fields selected
@@ -481,13 +643,99 @@
     </div>
     <div class="footer-actions">
       <button class="btn btn-secondary">Cancel</button>
-      <button class="btn btn-primary" id="apply-btn" disabled onclick="alert('Changes applied!')">
-        Apply selected changes
+      <button class="btn btn-primary" id="apply-btn" disabled onclick="goToStep(2)">
+        Next: Review Photos →
       </button>
     </div>
   </div>
 
+  </div><!-- /step-1 -->
+
+  <!-- Step 2 panel -->
+  <div class="step-panel" id="step-2">
+
+    <!-- Existing photos -->
+    <div class="photo-area">
+      <div class="photo-area-title">Current library · 3 photos</div>
+      <div class="photo-grid">
+
+        <div class="photo-card" data-src="https://picsum.photos/seed/meurice-room/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-room/400/300" alt="Hotel room">
+          <div class="zoom-hint">⤢</div>
+        </div>
+
+        <div class="photo-card" data-src="https://picsum.photos/seed/meurice-lobby/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-lobby/400/300" alt="Lobby">
+          <div class="zoom-hint">⤢</div>
+        </div>
+
+        <div class="photo-card" data-src="https://picsum.photos/seed/meurice-view/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-view/400/300" alt="View">
+          <div class="zoom-hint">⤢</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Suggested new photos -->
+    <div class="photo-area">
+      <div class="photo-area-title">Suggested photos to add · <strong id="photo-count">5</strong> selected</div>
+      <div class="photo-grid">
+
+        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-restaurant/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-restaurant/400/300" alt="Restaurant">
+          <div class="zoom-hint">⤢</div>
+          <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
+        </div>
+
+        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-spa/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-spa/400/300" alt="Spa">
+          <div class="zoom-hint">⤢</div>
+          <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
+        </div>
+
+        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-bar/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-bar/400/300" alt="Bar">
+          <div class="zoom-hint">⤢</div>
+          <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
+        </div>
+
+        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-garden/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-garden/400/300" alt="Garden">
+          <div class="zoom-hint">⤢</div>
+          <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
+        </div>
+
+        <div class="photo-card selectable selected" data-src="https://picsum.photos/seed/meurice-suite/900/650" onclick="openLightbox(this.dataset.src)">
+          <img src="https://picsum.photos/seed/meurice-suite/400/300" alt="Suite">
+          <div class="zoom-hint">⤢</div>
+          <button class="photo-toggle" onclick="event.stopPropagation(); togglePhoto(this.closest('.photo-card'))">✓</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer (step 2) -->
+    <div class="modal-footer">
+      <div class="footer-hint">
+        <strong id="photo-count-label">5</strong>&nbsp;photos selected to add
+      </div>
+      <div class="footer-actions">
+        <button class="btn btn-secondary" onclick="goToStep(1)">← Back</button>
+        <button class="btn btn-primary" onclick="alert('All changes applied!')">
+          Confirm &amp; Apply
+        </button>
+      </div>
+    </div>
+
+  </div><!-- /step-2 -->
+
 </div><!-- /modal -->
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+</div>
 
 <script>
   function switchTab(name, btn) {
@@ -495,6 +743,39 @@
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + name).classList.add('active');
     btn.classList.add('active');
+  }
+
+  function goToStep(n) {
+    document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('step-' + n).classList.add('active');
+    document.querySelectorAll('.step-item').forEach((item, i) => {
+      item.classList.remove('active', 'done');
+      if (i + 1 === n) item.classList.add('active');
+      else if (i + 1 < n) item.classList.add('done');
+    });
+  }
+
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').classList.add('open');
+  }
+
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+
+  let photoSelectedCount = 5;
+
+  function togglePhoto(card) {
+    if (card.classList.contains('selected')) {
+      card.classList.remove('selected');
+      photoSelectedCount--;
+    } else {
+      card.classList.add('selected');
+      photoSelectedCount++;
+    }
+    document.getElementById('photo-count').textContent = photoSelectedCount;
+    document.getElementById('photo-count-label').textContent = photoSelectedCount;
   }
 
   // Track selections per field
