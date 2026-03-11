@@ -132,6 +132,40 @@
   }
   .btn-text:hover { background: #dbeafe; }
 
+  /* ── Table section ── */
+  .table-section { border-top: 1px solid #e8eaed; }
+  .table-section + .table-section { border-top: 2px solid #e8eaed; }
+
+  .table-section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 28px 6px;
+    background: #f8f9fb;
+  }
+  .table-section-label .label-text {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .table-section-label .label-count {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+  .table-section.changed .label-text { color: #b45309; }
+  .table-section.changed .label-count {
+    color: #92400e;
+    background: #fef3c7;
+  }
+  .table-section.unchanged .label-text { color: #6b7280; }
+  .table-section.unchanged .label-count {
+    color: #4b5563;
+    background: #f3f4f6;
+  }
+
   /* ── Rows ── */
   .rows { padding: 8px 0; }
 
@@ -291,14 +325,6 @@
     <button class="close-btn" title="Close">✕</button>
   </div>
 
-  <!-- Column headers -->
-  <div class="col-headers">
-    <div class="col-label">Field</div>
-    <div class="col-label current">Current value</div>
-    <div></div>
-    <div class="col-label enriched">Enriched value</div>
-  </div>
-
   <!-- Select-all bar -->
   <div class="select-all-bar">
     <span>Quick select:</span>
@@ -309,94 +335,123 @@
     <button class="btn-text" onclick="selectAllNew()">Use all new only</button>
   </div>
 
-  <!-- Rows -->
-  <div class="rows" id="rows">
-
-    <!-- Location -->
-    <div class="row">
-      <div class="field-name">Location</div>
-      <div class="cell current-cell" data-field="location" data-side="current" onclick="pick(this)">
-        Paris — France
-      </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell" data-field="location" data-side="enriched" onclick="pick(this)">
-        Paris — France
-      </div>
+  <!-- Table 1: Changed fields -->
+  <div class="table-section changed">
+    <div class="table-section-label">
+      <span class="label-text">Changed fields</span>
+      <span class="label-count">5</span>
     </div>
-
-    <!-- Address -->
-    <div class="row">
-      <div class="field-name">Address</div>
-      <div class="cell current-cell empty-val" data-field="address" data-side="current" onclick="pick(this)">
-        No value
-      </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell new-value" data-field="address" data-side="enriched" onclick="pick(this)">
-        228 Rue de Rivoli, 75001 Paris
-      </div>
+    <div class="col-headers">
+      <div class="col-label">Field</div>
+      <div class="col-label current">Current value</div>
+      <div></div>
+      <div class="col-label enriched">Enriched value</div>
     </div>
+    <div class="rows">
 
-    <!-- Accessibility -->
-    <div class="row">
-      <div class="field-name">Accessibility</div>
-      <div class="cell current-cell empty-val" data-field="accessibility" data-side="current" onclick="pick(this)">
-        No value
+      <!-- Address -->
+      <div class="row">
+        <div class="field-name">Address</div>
+        <div class="cell current-cell empty-val" data-field="address" data-side="current" onclick="pick(this)">
+          No value
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell new-value" data-field="address" data-side="enriched" onclick="pick(this)">
+          228 Rue de Rivoli, 75001 Paris
+        </div>
       </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell new-value" data-field="accessibility" data-side="enriched" onclick="pick(this)">
-        <span class="accessibility-icon">♿</span> Wheelchair accessible entrance, adapted rooms available
+
+      <!-- Accessibility -->
+      <div class="row">
+        <div class="field-name">Accessibility</div>
+        <div class="cell current-cell empty-val" data-field="accessibility" data-side="current" onclick="pick(this)">
+          No value
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell new-value" data-field="accessibility" data-side="enriched" onclick="pick(this)">
+          <span class="accessibility-icon">♿</span> Wheelchair accessible entrance, adapted rooms available
+        </div>
       </div>
+
+      <!-- Weekdays Closed -->
+      <div class="row">
+        <div class="field-name">Weekdays Closed</div>
+        <div class="cell current-cell empty-val" data-field="weekdays" data-side="current" onclick="pick(this)">
+          No value
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell new-value" data-field="weekdays" data-side="enriched" onclick="pick(this)">
+          Open 7 days — no closures
+        </div>
+      </div>
+
+      <!-- Website -->
+      <div class="row">
+        <div class="field-name">Website</div>
+        <div class="cell current-cell" data-field="website" data-side="current" onclick="pick(this)">
+          dorchestercollection.com/le-meurice
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell" data-field="website" data-side="enriched" onclick="pick(this)">
+          dorchestercollection.com/en/paris/le-meurice
+        </div>
+      </div>
+
+      <!-- Direct Reservation Link -->
+      <div class="row">
+        <div class="field-name">Reservation Link</div>
+        <div class="cell current-cell empty-val" data-field="reservation" data-side="current" onclick="pick(this)">
+          No value
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell new-value" data-field="reservation" data-side="enriched" onclick="pick(this)">
+          book.dorchestercollection.com/?hotel=LEMEURICE
+        </div>
+      </div>
+
     </div>
+  </div><!-- /changed -->
 
-    <!-- Phone -->
-    <div class="row">
-      <div class="field-name">Phone</div>
-      <div class="cell current-cell" data-field="phone" data-side="current" onclick="pick(this)">
-        +33 1 44 58 10 10
-      </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell" data-field="phone" data-side="enriched" onclick="pick(this)">
-        +33 1 44 58 10 10
-      </div>
+  <!-- Table 2: Unchanged fields -->
+  <div class="table-section unchanged">
+    <div class="table-section-label">
+      <span class="label-text">Unchanged fields</span>
+      <span class="label-count">2</span>
     </div>
-
-    <!-- Weekdays Closed -->
-    <div class="row">
-      <div class="field-name">Weekdays Closed</div>
-      <div class="cell current-cell empty-val" data-field="weekdays" data-side="current" onclick="pick(this)">
-        No value
-      </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell new-value" data-field="weekdays" data-side="enriched" onclick="pick(this)">
-        Open 7 days — no closures
-      </div>
+    <div class="col-headers">
+      <div class="col-label">Field</div>
+      <div class="col-label current">Current value</div>
+      <div></div>
+      <div class="col-label enriched">Enriched value</div>
     </div>
+    <div class="rows">
 
-    <!-- Website -->
-    <div class="row">
-      <div class="field-name">Website</div>
-      <div class="cell current-cell" data-field="website" data-side="current" onclick="pick(this)">
-        dorchestercollection.com/le-meurice
+      <!-- Location -->
+      <div class="row">
+        <div class="field-name">Location</div>
+        <div class="cell current-cell" data-field="location" data-side="current" onclick="pick(this)">
+          Paris — France
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell" data-field="location" data-side="enriched" onclick="pick(this)">
+          Paris — France
+        </div>
       </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell" data-field="website" data-side="enriched" onclick="pick(this)">
-        dorchestercollection.com/en/paris/le-meurice
+
+      <!-- Phone -->
+      <div class="row">
+        <div class="field-name">Phone</div>
+        <div class="cell current-cell" data-field="phone" data-side="current" onclick="pick(this)">
+          +33 1 44 58 10 10
+        </div>
+        <div class="arrow-col">›</div>
+        <div class="cell enriched-cell" data-field="phone" data-side="enriched" onclick="pick(this)">
+          +33 1 44 58 10 10
+        </div>
       </div>
+
     </div>
-
-    <!-- Direct Reservation Link -->
-    <div class="row">
-      <div class="field-name">Reservation Link</div>
-      <div class="cell current-cell empty-val" data-field="reservation" data-side="current" onclick="pick(this)">
-        No value
-      </div>
-      <div class="arrow-col">›</div>
-      <div class="cell enriched-cell new-value" data-field="reservation" data-side="enriched" onclick="pick(this)">
-        book.dorchestercollection.com/?hotel=LEMEURICE
-      </div>
-    </div>
-
-  </div><!-- /rows -->
+  </div><!-- /unchanged -->
 
   <!-- Footer -->
   <div class="modal-footer">
