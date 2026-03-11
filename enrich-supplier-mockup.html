@@ -112,12 +112,12 @@
     justify-content: flex-end;
     gap: 8px;
     padding: 8px 28px;
-    background: #eff6ff;
-    border-bottom: 1px solid #dbeafe;
+    background: #f8f9fb;
+    border-bottom: 1px solid #e8eaed;
   }
   .select-all-bar span {
     font-size: 12px;
-    color: #3b82f6;
+    color: #9ca3af;
   }
   .btn-text {
     font-size: 12px;
@@ -350,8 +350,6 @@
     <button class="btn-text" onclick="selectAll('current')">Keep all current</button>
     <span style="color:#cbd5e1">|</span>
     <button class="btn-text" onclick="selectAll('enriched')">Use all enriched</button>
-    <span style="color:#cbd5e1">|</span>
-    <button class="btn-text" onclick="selectAllNew()">Use all new only</button>
   </div>
 
   <!-- Table 1: Changed fields -->
@@ -497,10 +495,6 @@
       const target = row.querySelector(`[data-side="${side}"]`);
       if (target) pick(target);
     });
-  }
-
-  function selectAllNew() {
-    document.querySelectorAll('.cell.new-value').forEach(cell => pick(cell));
   }
 
   function updateCount() {
