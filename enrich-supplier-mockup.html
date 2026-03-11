@@ -136,6 +136,25 @@
   .table-section { border-top: 1px solid #e8eaed; }
   .table-section + .table-section { border-top: 2px solid #e8eaed; }
 
+  /* ── Unchanged rows (read-only) ── */
+  .unchanged-rows { padding: 6px 0 10px; }
+  .unchanged-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    padding: 6px 28px;
+    min-height: 36px;
+  }
+  .unchanged-row + .unchanged-row { border-top: 1px solid #f3f4f6; }
+  .unchanged-row .field-name {
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .unchanged-val {
+    font-size: 13px;
+    color: #6b7280;
+  }
+
   .table-section-label {
     display: flex;
     align-items: center;
@@ -412,42 +431,22 @@
     </div>
   </div><!-- /changed -->
 
-  <!-- Table 2: Unchanged fields -->
+  <!-- Table 2: Unchanged fields (read-only) -->
   <div class="table-section unchanged">
     <div class="table-section-label">
       <span class="label-text">Unchanged fields</span>
       <span class="label-count">2</span>
     </div>
-    <div class="col-headers">
-      <div class="col-label">Field</div>
-      <div class="col-label current">Current value</div>
-      <div></div>
-      <div class="col-label enriched">Enriched value</div>
-    </div>
-    <div class="rows">
+    <div class="unchanged-rows">
 
-      <!-- Location -->
-      <div class="row">
+      <div class="unchanged-row">
         <div class="field-name">Location</div>
-        <div class="cell current-cell" data-field="location" data-side="current" onclick="pick(this)">
-          Paris — France
-        </div>
-        <div class="arrow-col">›</div>
-        <div class="cell enriched-cell" data-field="location" data-side="enriched" onclick="pick(this)">
-          Paris — France
-        </div>
+        <span class="unchanged-val">Paris — France</span>
       </div>
 
-      <!-- Phone -->
-      <div class="row">
+      <div class="unchanged-row">
         <div class="field-name">Phone</div>
-        <div class="cell current-cell" data-field="phone" data-side="current" onclick="pick(this)">
-          +33 1 44 58 10 10
-        </div>
-        <div class="arrow-col">›</div>
-        <div class="cell enriched-cell" data-field="phone" data-side="enriched" onclick="pick(this)">
-          +33 1 44 58 10 10
-        </div>
+        <span class="unchanged-val">+33 1 44 58 10 10</span>
       </div>
 
     </div>
@@ -456,7 +455,7 @@
   <!-- Footer -->
   <div class="modal-footer">
     <div class="footer-hint">
-      <strong id="selected-count">0</strong>&nbsp;of 7 fields selected
+      <strong id="selected-count">0</strong>&nbsp;of 5 fields selected
       &nbsp;·&nbsp; Click a value to select it
     </div>
     <div class="footer-actions">
@@ -510,15 +509,8 @@
     document.getElementById('apply-btn').disabled = count === 0;
   }
 
-  // Pre-select a few to show the pattern
   window.addEventListener('DOMContentLoaded', () => {
-    // auto-select enriched for fields that have "New" badge
     document.querySelectorAll('.cell.new-value').forEach(c => pick(c));
-    // keep current for location and phone (same)
-    const locCurrent = document.querySelector('[data-field="location"][data-side="current"]');
-    if (locCurrent) pick(locCurrent);
-    const phoneCurrent = document.querySelector('[data-field="phone"][data-side="current"]');
-    if (phoneCurrent) pick(phoneCurrent);
   });
 </script>
 </body>
